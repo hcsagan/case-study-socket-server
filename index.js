@@ -50,6 +50,7 @@ io.on("connection", async (socket) => {
     
     if(--connections === 0) {
       clearInterval(loop);
+      loop = null;
       console.log("last user disconnected");
     }
   });
