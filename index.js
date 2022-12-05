@@ -2,15 +2,17 @@ const https = require("https");
 const express = require("express");
 
 const PORT = process.env.PORT || 3000;
-const INDEX = '/index.html';
+const INDEX = "/index.html";
 
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-
 const { clearInterval } = require("timers");
 const io = require("socket.io")(server);
+
+let connections = 0;
+let loop = null;
 
 const getRandomUser = () =>
   new Promise((resolve, reject) => {
@@ -26,23 +28,29 @@ const getRandomUser = () =>
         });
       })
       .on("error", (err) => {
-        reject(data.message);
+        reject(err.message);
       });
   });
 
 io.on("connection", async (socket) => {
-  const loop = setInterval(async () => {
-    try {
-      const user = await getRandomUser();
+  connections++;
+  if (loop === null) {
+    loop = setInterval(async () => {
+      try {
+        const user = await getRandomUser();
 
-      socket.emit("userList", JSON.parse(user));
-    } catch (e) {
-      console.log(e);
-    }
-  }, 5000);
-
+        io.emit("userList", JSON.parse(user));
+      } catch (e) {
+        console.log(e);
+      }
+    }, 5000);
+  }
   socket.on("disconnect", () => {
-    clearInterval(loop);
     console.log("user disconnected");
+    
+    if(--connections === 0) {
+      clearInterval(loop);
+      console.log("last user disconnected");
+    }
   });
 });
