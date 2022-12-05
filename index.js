@@ -12,8 +12,6 @@ const server = express()
 const { clearInterval } = require("timers");
 const io = require("socket.io")(server);
 
-httpServer.listen(80);
-
 const getRandomUser = () =>
   new Promise((resolve, reject) => {
     https
