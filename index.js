@@ -1,10 +1,10 @@
 const https = require("https");
-const httpServer = require("http").createServer();
+const httpServer = https.createServer();
 
 const { clearInterval } = require("timers");
 const io = require("socket.io")(httpServer, {});
 
-httpServer.listen(3000);
+httpServer.listen(80);
 
 const getRandomUser = () =>
   new Promise((resolve, reject) => {
