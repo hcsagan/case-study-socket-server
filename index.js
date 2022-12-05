@@ -1,12 +1,8 @@
-const httpServer = require("https").createServer();
-const { clearInterval } = require("timers");
-const io = require("socket.io")(httpServer, {
-  // ...
-});
+const https = require("https");
+const httpServer = https.createServer();
 
-io.on("connection", (socket) => {
-  // ...
-});
+const { clearInterval } = require("timers");
+const io = require("socket.io")(httpServer, {});
 
 httpServer.listen(3000);
 
